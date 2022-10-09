@@ -6,10 +6,14 @@
 //Using double coupled 28buj48 steppers and UnoR3 with CNC-shield should do the trick
 //Todo:
 
-//Planetaries
+//Planetaries extruded into herringbones
 //Peltier blocks on sides of brakepipe as heatbreak
 //thread brakepipe in aproximately 20mm
 //Domenut hotend with induction heating
+//counterweights
+//Motormounts
+//Ramps and ATX as wilson does it.
+//bedplate out of stone,perhaps.
 
 
 //Input parameters
@@ -26,38 +30,40 @@ toothpitch=2;
 ringamp=10;
 ringfreq=6;
 tireprofile=3;
-planetscrew=6;
-margin=0.2;
+planetscrew=4;
+margin=0.1;
 
 detail= 18;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
 sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
-ringteeth=planetteeth*(ringdia/planetdia);
+ringteeth=sunteeth*((sunteeth*round(ringdia/planetdia))/sunteeth)-sunteeth;
 $fn=detail;
 echo("Sun diameter is ");
 echo(sundia);
 echo("and planet diameter is ");
 echo(planetdia);
+echo("and ring teeth is ");
+echo(ringteeth);
 
-//carriage();
+carriage();
 
 
-planetaries();
+//planetaries();
 
 module planetaries(){
     difference(){
-     gear(sundia,sunteeth); 
-        cube([5,9,3],center=true);
+     rotate([0,0,360/(sunteeth*2)])gear(sundia,sunteeth); 
+        cube([3,6,2],center=true);
     }
     for (i=[-120:120:120])
     rotate([0,0,i])translate([planetdia/2+sundia/2,0,0])difference(){
-     rotate([0,0,(180/planetteeth)*i/120])gear(planetdia,planetteeth); 
+     rotate([0,0,(180/planetteeth)*i])gear(planetdia,planetteeth); 
         circle(planetscrew/2);
     }
     difference(){
         circle(ringdia/2);
-    gear(ringdia-tireprofile*2-toothpitch*2,ringteeth);
+    rotate([0,0,360/(sunteeth*1)])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
     } 
     }
 
@@ -80,7 +86,7 @@ module carriage(){
     cylinder(80,2,2,center=true);
         for (k=[0:120:360]){
         rotate([0,0,k+15])translate([26,26,2])rotate([-30,30,-3])cylinder(40,5,14,center=true);
-            rotate([0,0,k])translate([30,0,30])rotate([90,0,0])cylinder(10,29,29,center=true);//room for planetary gear
+            rotate([0,0,k])translate([30,0,30])rotate([90,0,0])cylinder(10,30,30,center=true);//room for planetary gear
         }
     }    
     color("chocolate")difference(){
@@ -96,7 +102,7 @@ module carriage(){
     
     
     rotate([0,0,j])translate([30,16,26])rotate([90,-90,0])stepperholder();    
-        rotate([0,0,j])translate([30,0,30])rotate([90,0,0])cylinder(10,29,29,center=true);//switch with planetary gear
+        rotate([0,0,j])translate([30,0,30])rotate([90,0,0])planetaries();//cylinder(10,29,29,center=true);//switch with planetary gear
         
         color("red")rotate([0,0,j])translate([40,30*i,5])sphere(10);
     }
