@@ -10,7 +10,8 @@
 //Peltier blocks on sides of brakepipe as heatbreak
 //thread brakepipe in aproximately 20mm
 //Domenut hotend with induction heating
-
+//Holes for planetaries
+  //  holes for poles-wire
 
 //Input parameters
 
@@ -29,7 +30,7 @@ tireprofile=3;
 planetscrew=4;
 margin=0.1;
 
-detail= 90;
+detail= 12;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
 sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
@@ -42,10 +43,10 @@ echo(planetdia);
 echo("and ring teeth is ");
 echo(ringteeth);
 
-//carriage();
+carriage();
 
 
-planetaries();
+//planetaries();
 
 module planetaries(){for(j=[-10:0.5:9.5]){
     color("brown")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
@@ -58,12 +59,12 @@ module planetaries(){for(j=[-10:0.5:9.5]){
         circle(planetscrew/2);
     }
         color("cyan")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
-        circle(ringdia/2-tireprofile);
+        circle(ringdia/2-tireprofile+0.4);
     rotate([0,0,360/(sunteeth*2)-2*abs(j)])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
     }
     //rotate_extrude(1)
     for(k=[0:1:360]){
-   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile,0])polygon([[1,tireprofile],[5,+sin(k+30)],[5,0],[-5,0],[-5,1+sin(k-30)],[-1,tireprofile]]);
+   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile+0.5,0])polygon([[1,tireprofile],[5,1+sin(7*k+30)],[5,0],[-5,0],[-5,1+sin(7*k-30)],[-1,tireprofile]]);
     }  
     }
 }
