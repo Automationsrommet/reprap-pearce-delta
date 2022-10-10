@@ -6,14 +6,10 @@
 //Using double coupled 28buj48 steppers and UnoR3 with CNC-shield should do the trick
 //Todo:
 
-//Planetaries extruded into herringbones
+//Planetaries
 //Peltier blocks on sides of brakepipe as heatbreak
 //thread brakepipe in aproximately 20mm
 //Domenut hotend with induction heating
-//counterweights
-//Motormounts
-//Ramps and ATX as wilson does it.
-//bedplate out of stone,perhaps.
 
 
 //Input parameters
@@ -33,7 +29,7 @@ tireprofile=3;
 planetscrew=4;
 margin=0.1;
 
-detail= 18;
+detail= 90;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
 sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
@@ -46,26 +42,31 @@ echo(planetdia);
 echo("and ring teeth is ");
 echo(ringteeth);
 
-carriage();
+//carriage();
 
 
-//planetaries();
+planetaries();
 
-module planetaries(){
-    difference(){
-     rotate([0,0,360/(sunteeth*2)])gear(sundia,sunteeth); 
-        cube([3,6,2],center=true);
+module planetaries(){for(j=[-10:0.5:9.5]){
+    color("brown")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
+     rotate([0,0,360/(sunteeth*2)+2*abs(j)])gear(sundia,sunteeth); 
+        square([3,6],center=true);
     }
-    for (i=[-120:120:120])
-    rotate([0,0,i])translate([planetdia/2+sundia/2,0,0])difference(){
-     rotate([0,0,(180/planetteeth)*i])gear(planetdia,planetteeth); 
+    color("yellow")translate([0,0,0.5*j])linear_extrude(0.5)for (i=[-120:120:120])
+    rotate([0,0,i-30])translate([planetdia/2+sundia/2,0,0])difference(){
+     rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia,planetteeth); 
         circle(planetscrew/2);
     }
-    difference(){
-        circle(ringdia/2);
-    rotate([0,0,360/(sunteeth*1)])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
-    } 
+        color("cyan")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
+        circle(ringdia/2-tireprofile);
+    rotate([0,0,360/(sunteeth*2)-2*abs(j)])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
     }
+    //rotate_extrude(1)
+    for(k=[0:1:360]){
+   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile,0])polygon([[1,tireprofile],[5,+sin(k+30)],[5,0],[-5,0],[-5,1+sin(k-30)],[-1,tireprofile]]);
+    }  
+    }
+}
 
 module gear(dia,teeth){
    
@@ -155,3 +156,4 @@ linear_extrude(10)polygon([[-8,18],[15,22],[19,17],[18,-18],[15,-21],[10,-24],[-
 module hotend(){
     //Dome nut
 }
+
