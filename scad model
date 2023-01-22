@@ -48,8 +48,26 @@ driverods();
 elevator();
 //hotend);
 carriage();
+topdeck();
+translate([0,0,-1012])floor();
 //planetaries();
 
+module topdeck(){
+    difference(){
+    translate([0,0,1000])floor();
+     cylinder(3000,200,200,center=true);  
+       for (j=[0:120:360]){
+        rotate([0,0,j])
+    translate([540,0,1006]) cylinder(30,12,12,center=true);
+} 
+    }
+}
+module floor(){
+    for (j=[0:120:360]){
+        rotate([0,0,j])
+    linear_extrude(12)polygon([[230.9,-400],[540,-160],[630,-50],[632,0],[630,50],[540,160],[230.9,400],[0,0]]);
+}
+}
 module driverods(){
     for (j=[0:120:360]){ 
  for (i=[-1:2:1]){       
@@ -58,9 +76,15 @@ module driverods(){
      color("silver")rotate([0,0,j])translate([542,0,6])cylinder(5,6,6,$fn=6,center=true);
      color("silver")rotate([0,0,j])translate([542,0,997])cylinder(5,6,6,$fn=6,center=true);
      color("silver")rotate([0,0,j])translate([542,0,991])cylinder(5,6,6,$fn=6,center=true);
-     rotate([0,0,j])translate([542,0,1010])rotate([180,0,0])stepper();
-     rotate([0,0,j])translate([542,0,-10])rotate([0,0,0])stepper();
-     rotate([0,0,j])translate([542,0,1002])difference(){
+     rotate([0,0,j])translate([542,0,1015])rotate([180,0,0])stepper();
+     rotate([0,0,j])translate([542,0,-12])rotate([0,0,0])stepper();
+     
+     rotate([0,0,j])translate([542,0,1002])rotate([180,0,0])difference(){
+     cylinder(15,10,10,center=true);
+     translate([0,0,-10])cylinder(10,6,6,$fn=6,center=true);
+         cube([5,2,30],center=true);
+     }
+     rotate([0,0,j])translate([542,0,0])difference(){
      cylinder(15,10,10,center=true);
      translate([0,0,-10])cylinder(10,6,6,$fn=6,center=true);
          cube([5,2,30],center=true);
