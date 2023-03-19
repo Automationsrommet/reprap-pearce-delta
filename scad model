@@ -41,24 +41,29 @@ sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
 ringteeth=sunteeth*((sunteeth*round(ringdia/planetdia))/sunteeth)-sunteeth;
 $fn=detail;
 //frame();
-poles();
-towers();
+//poles();
+//towers();
 sliders();
 driverods();
-elevator();
+//elevator();
 //hotend);
-carriage();
+//carriage();
 topdeck();
-translate([0,0,-1012])floor();
+//translate([0,0,-1012])floor();
 //planetaries();
 
 module topdeck(){
-    difference(){
+    color("yellow")difference(){
     translate([0,0,1000])floor();
      cylinder(3000,200,200,center=true);  
        for (j=[0:120:360]){
-        rotate([0,0,j])
-    translate([540,0,1006]) cylinder(30,12,12,center=true);
+        rotate([0,0,j]){
+    translate([543,0,1006]) cylinder(30,16,16,center=true);
+           translate([540-1,-0,1006])translate(motorscrew1)color("grey")
+cylinder(30,1,2,center=true);
+translate([540-1,-0,1006])translate(motorscrew2)color("grey")
+cylinder(30,1,2,center=true);
+        } 
 } 
     }
 }
@@ -89,7 +94,9 @@ module driverods(){
      translate([0,0,-10])cylinder(10,6,6,$fn=6,center=true);
          cube([5,2,30],center=true);
      }
-    }  }
+    }  
+    rotate([0,0,j])driverodholder();
+    }
 }
 
 module elevator(){
@@ -303,6 +310,41 @@ cylinder(30,1,2,center=true);
     //}
 }
 }
+module driverodholder(){translate([542+20,0,-12-12])rotate([0,0,180])difference(){
+    color("cyan")minkowski(){
+    difference(){
+        intersection(){
+translate([0,0,-40])linear_extrude(50)polygon([[-8,18],[15,22],[19,17],[18,-18],[15,-21],[10,-24],[-20,-15],[-20,18]]);
+        translate([12,30,-12])rotate([90,0,0])linear_extrude(50)polygon([[-8,23],[15,23],[11,23],[-15,-24],[-20,-24],[-24,-35],[-24,15]]);
+        }
+      translate([12,0,0])cylinder(90,15,15,center=true);  
+     translate([12,0,0])cube([40,15,90],center=true);    
+    }
+ sphere(1,$fn=8);
+}   
+
+translate([-5,-0,-10]){
+translate(motormountscrew1)rotate([0,90,0])cylinder(20,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew2)rotate([0,90,0])cylinder(20,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew3)rotate([0,90,0])cylinder(20,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew4)rotate([0,90,0])cylinder(20,planetscrew/4,planetscrew,center=true);
+    }
+    
+    translate([0,-0,9]){
+translate(motormountscrew1)rotate([0,90,0])cylinder(30,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew2)rotate([0,90,0])cylinder(30,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew3)rotate([0,90,0])cylinder(30,planetscrew/4,planetscrew,center=true);
+translate(motormountscrew4)rotate([0,90,0])cylinder(30,planetscrew/4,planetscrew,center=true);
+    }
+    
+translate([1,-0,0])translate(motorscrew1)color("grey")
+cylinder(20,1,2,center=true);
+translate([1,-0,0])translate(motorscrew2)color("grey")
+cylinder(20,1,2,center=true);       
+
+}
+
+}
 module hotend(){
     //Dome nut
 } 
@@ -313,3 +355,4 @@ echo("and planet diameter is ");
 echo(planetdia);
 echo("and ring teeth is ");
 echo(ringteeth);
+
