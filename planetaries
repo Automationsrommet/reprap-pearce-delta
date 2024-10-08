@@ -49,9 +49,9 @@ echo(ringteeth);
 
 planetaries();
 
-module planetaries(){for(j=[-10:layer:9.5]){
+module planetaries(){for(j=[-10:layer:9.75]){
     color("brown")translate([0,0,0.5*j])linear_extrude(layer)difference(){
-     rotate([0,0,360/(sunteeth*2)+2*abs(j)-8])gear(sundia,sunteeth); 
+     rotate([0,0,360/(sunteeth*2)+1.9*abs(j)-7.3])gear(sundia,sunteeth); 
         square([3,6],center=true);
     }
     color("yellow")translate([0,0,0.5*j])linear_extrude(layer)for (i=[-120:120:120])
@@ -59,9 +59,10 @@ module planetaries(){for(j=[-10:layer:9.5]){
      rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia,planetteeth); 
         circle(planetscrew/2);
     }
-        color("cyan")translate([0,0,0.5*j])linear_extrude(layer)difference(){
-        circle(ringdia/2-tireprofile+0.4);
-    rotate([0,0,360/(sunteeth*2)-2*abs(j)-5.3])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
+        color("cyan")translate([0,0,0.5*j])linear_extrude(layer)
+        difference(){
+        circle(ringdia/2-tireprofile+0.3);
+    rotate([0,0,360/(sunteeth*2)-0.556*abs(j)-0])gear(ringdia-tireprofile*2-toothpitch*1.5+margin*8,ringteeth);
     }
     
     for(k=[0:1:360]){
