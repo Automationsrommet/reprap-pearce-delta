@@ -32,7 +32,7 @@ motorscrew2=[12,-17,0];
 layer=0.2;
 screwdetail=20;
 threadmargin=0.1;
-detail= 12;
+detail= 20;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
 sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
@@ -45,10 +45,10 @@ $fn=detail;
 //driverods();
 //elevator();
 //hotend);
-carriage();
+//carriage();
 //topdeck();
 //translate([0,0,-1012])floor();
-//planetaries();
+planetaries();
 //translate([0,140,0])planetholder();
 //translate([0,90,0])stepperholder();
 //screw(50,0.2);
@@ -68,20 +68,30 @@ module screw(d,mar){
     linear_extrude(2.5*PI/d)
     polygon([[-1.5/2,0],[0,1.5/2],[1.5/2,0]]);
     }
-module planetaries(){for(j=[-10:layer:9.75]){
+module planetaries(){
+
+for(j=[-10:layer:9.75]){
+difference(){
     color("brown")translate([0,0,0.5*j])linear_extrude(layer)difference(){
      rotate([0,0,360/(sunteeth*2)+2*abs(j)-8])gear(sundia,sunteeth); 
         square([3,6],center=true);
     }
+    translate([0,0,3])
+    cylinder(2,6,7,center=false);
+    }
+    difference(){
     color("yellow")translate([0,0,0.5*j])linear_extrude(layer)for (i=[-180:60:120])
     rotate([0,0,i-35])translate([planetdia/2+sundia/2+0.5,0,0])difference(){
      rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia,planetteeth); 
         circle(planetscrew/2);
     }
+    for (n=[-180:60:120])rotate([0,0,n-35])translate([planetdia/2+sundia/2+0.5,0,3])
+    cylinder(2,3,4,center=false);
+    }
         color("cyan")translate([0,0,0.5*j])linear_extrude(layer)
         difference(){
         circle(ringdia/2-tireprofile+0.3);
-    rotate([0,0,360/(sunteeth*2)-0.55*abs(j)-0])gear(ringdia-tireprofile*2-toothpitch*1.5+margin*6.8,ringteeth);
+    rotate([0,0,360/(sunteeth*2)-0.55*abs(j)-0])gear(ringdia-tireprofile*2-toothpitch*1.5+margin*9,ringteeth);
     }
     
     for(k=[0:1:360]){
