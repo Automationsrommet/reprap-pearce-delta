@@ -23,18 +23,15 @@ ringfreq=6;
 tireprofile=3;
 planetscrew=3;
 margin=0.1;
-screw1=[-30,18,2];
-screw2=[-30,17,8];
-//screw3=[-30,-10,9];
-//screw4=[-30,-10,2];
-motormountscrew1=[-0,-11,-19];
-motormountscrew2=[-0,10,-21];
-//motormountscrew3=[-0,13,-17];
-//motormountscrew4=[-0,13,-23];
-motorscrew1=[12,17,5];
-motorscrew2=[12,-17,5];
+screw1=[9,-2,0];
+screw2=[-18,-2,0];
+motormountscrew1=[11,23,0];
+motormountscrew2=[-9,23,0];
+motorscrew1=[12,17,0];
+motorscrew2=[12,-17,0];
 layer=0.2;
-
+screwdetail=20;
+threadmargin=0.1;
 detail= 12;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
@@ -52,8 +49,25 @@ carriage();
 //topdeck();
 //translate([0,0,-1012])floor();
 //planetaries();
-//planetholder();
-//stepperholder();
+//translate([0,140,0])planetholder();
+//translate([0,90,0])stepperholder();
+//screw(50,0.2);
+module screw(d,mar){
+    cylinder(25,1.25+mar,1.25+mar,center=false,$fn=d);
+    translate([0,0,25])cylinder(5,1.25,0,center=false,$fn=d);
+    cylinder(5,8.5/2,0,center=false,$fn=d);
+    //1.87/6
+   
+    for(i=[0:1:7.3*d])
+        
+        rotate([0,0,(360/(d))*(i)])
+    translate([-1.25-mar,0,i*(18.7/6)/d+4])
+    rotate([90,-90,0])
+    rotate([0,10,0])
+    translate([0,0,-(2.5*PI/d)/2])
+    linear_extrude(2.5*PI/d)
+    polygon([[-1.5/2,0],[0,1.5/2],[1.5/2,0]]);
+    }
 module planetaries(){for(j=[-10:layer:9.75]){
     color("brown")translate([0,0,0.5*j])linear_extrude(layer)difference(){
      rotate([0,0,360/(sunteeth*2)+2*abs(j)-8])gear(sundia,sunteeth); 
@@ -163,26 +177,8 @@ module sliders(){
       color("silver")rotate([0,0,j])translate([575,40*i,-100])rotate([0,0,-90])linear_extrude(1100)polygon([[0,0],[10,0],[10,-10],[6,-10],[6,-8],[8,-8],[8,-2],[-8,-2],[-8,-8],[-6,-8],[-6,-10],[-10,-10],[-10,0]]);
     }  }
 }
-//module planetaries(){for(j=[-10:0.5:9.5]){
-//    color("brown")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
-//     rotate([0,0,360/(sunteeth*2)+2*abs(j)])gear(sundia,sunteeth); 
-//        square([3,6],center=true);
-//    }
-//    color("yellow")translate([0,0,0.5*j])linear_extrude(0.5)for (i=[-120:120:120])
-//    rotate([0,0,i-30])translate([planetdia/2+sundia/2,0,0])difference(){
-//     rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia,planetteeth); 
-//        circle(planetscrew/2);
-//    }
-//        color("cyan")translate([0,0,0.5*j])linear_extrude(0.5)difference(){
-//        circle(ringdia/2-tireprofile+0.4);
-//    rotate([0,0,360/(sunteeth*2)-2*abs(j)])gear(ringdia-tireprofile*2-toothpitch*1.5+margin,ringteeth);
-//    }
-//    //rotate_extrude(1)
-//    for(k=[0:1:360]){
-//   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile+0.5,0])polygon([[1,tireprofile],[5,1+sin(7*k+30)],[5,0],[-5,0],[-5,1+sin(7*k-30)],[-1,tireprofile]]);
-//    }  
-//    }
-//}
+
+
 module towers(){
     for (j=[0:120:360]){ 
  for (i=[-1:2:1]){        
@@ -222,35 +218,32 @@ module carriage(){
             //planetaries();
         }
     //carriage screw holes
-        for (m=[0:120:360]){rotate([0,0,m])translate([30,-9,30])rotate([90,-90,0]){
-translate(screw1)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-translate(screw2)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-//translate(screw3)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true); 
-//translate(screw4)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-translate(motormountscrew1)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-translate(motormountscrew2)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-//translate(motormountscrew3)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
-//translate(motormountscrew4)rotate([0,90,0])cylinder(200,planetscrew/2,planetscrew/2,center=true);
+        for (m=[0:120:360]){rotate([0,0,m])translate([30,-9,-6])rotate([0,0,0]){
+translate(screw1)rotate([0,0,0])
+           screw(screwdetail,threadmargin); 
+translate(screw2)rotate([0,0,0])
+    screw(screwdetail,threadmargin);         
+translate(motormountscrew1)rotate([0,0,0])
+     screw(screwdetail,threadmargin);       
+    
+translate(motormountscrew2)rotate([0,0,0])
+     screw(screwdetail,threadmargin);       
      }
 for (l=[0:120:360]){
     for (m=[-1:2:1]){     
 rotate([0,45,l])translate([25,30*m-2,15])cylinder(100,0.9,0.9,center=true);  
 rotate([0,45,l])translate([25,30*m+2,15])cylinder(100,0.9,0.9,center=true);      
    }}
-    }   } //}
-    //color("chocolate")difference(){
-     //   cylinder(50,3,3,center=true);
-   // cylinder(80,1,1,center=true);
-    //}
+    }   } 
     for (j=[0:120:360]){
     for (i=[-1:2:1]){
         
    //rotate([0,0,j])translate([30,6,30])rotate([90,-90,0])stepper();
      
-   rotate([0,0,j])translate([30,-9,30])rotate([90,-90,0])planetholder();     
+   rotate([0,0,j])planetholder();     
     
     
-   rotate([0,0,j])translate([30,17,26])rotate([90,-90,0])stepperholder();    
+   rotate([0,0,j])stepperholder();    
         //rotate([0,0,j])translate([30,0,30])rotate([90,0,0])
         //planetaries();
         //cylinder(10,29,29,center=true);//switch with planetary gear
@@ -284,6 +277,7 @@ module stepper(){translate([8,0,-4.5]){
 
 module planetholder(){
 //planetdia/2+sundia/2+0.5
+    translate([30,-9,30])rotate([90,-90,0]){
 difference(){
      translate([0,0,1])color("white")minkowski(){ 
         difference(){
@@ -309,14 +303,16 @@ cylinder(4,3,1,$fn=5);
 }
 
 //carriage screw holes
-translate(screw1)rotate([0,90,0])cylinder(30,planetscrew/2,planetscrew/2,center=true);
-translate(screw2)rotate([0,90,0])cylinder(30,planetscrew/2,planetscrew/2,center=true);
-//translate(screw3)rotate([0,90,0])cylinder(30,planetscrew/2,planetscrew/2,center=true);
-//translate(screw4)rotate([0,90,0])cylinder(30,planetscrew/2,planetscrew/2,center=true);
-}
+translate([21-9,-5-6,-5])screw(screwdetail,threadmargin);
+translate([27+12,-4-7,-5])screw(screwdetail,threadmargin);
+}}
+//translate([21-9,-5-6,-8])screw(screwdetail,threadmargin);
+//translate([27+12,-4-7,-8])screw(screwdetail,threadmargin);
 }
 
-module stepperholder(){difference(){
+module stepperholder(){
+    translate([30,17,26])rotate([90,-90,0])
+    difference(){
 union(){
     color("green")minkowski(){
     difference(){
@@ -335,18 +331,16 @@ minkowski(){
 translate([-20,-0,25]){
 translate(motormountscrew1)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
 translate(motormountscrew2)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
-//translate(motormountscrew3)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
-//translate(motormountscrew4)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
+
     }
     
-translate(motorscrew1)color("grey")
-cylinder(13,1,2,center=true);
-translate(motorscrew2)color("grey")
-cylinder(13,1,2,center=true);       
-       
+translate([21,14,-5])color("grey")screw(screwdetail,threadmargin);
+translate([41,14,-5])color("grey")screw(screwdetail,threadmargin); 
     
     //}
 }
+//translate([21,14,-8])color("grey")screw(screwdetail,threadmargin);
+//translate([41,14,-8])color("grey")screw(screwdetail,threadmargin); 
 }
 module driverodholder(){translate([542+20,0,-12-12])rotate([0,0,180])difference(){
     color("cyan")minkowski(){
