@@ -1,10 +1,10 @@
 //This is Reprap Pearce, named after my favorite scientist nowadays Joshua Pearce
 //The idea is having a big delta printer at very low build cost that prints ok and looks cool.
-//Using double coupled 28buj48 steppers and UnoR3 with CNC-shield should do the trick
+//Using double coupled 28buj48 steppers and home-made pcb for rp2040 and thoshiba drivers should do well.
 //Todo:
-//Peltier blocks on sides of brakepipe as heatbreak
-//thread brakepipe in aproximately 20mm
-//Domenut hotend with induction heating
+//Drink container metal sheets on sides of brakepipe as heatbreak for 30mm
+//Use brakepipe original end coupler, carriage plate probably should be ABS
+//Domenut hotend with induction heating hanging by metal straps from carriage plate holes.
 
 
 //Input parameters
@@ -32,7 +32,7 @@ motorscrew2=[12,-17,0];
 layer=0.2;
 screwdetail=20;
 threadmargin=0.1;
-detail= 20;
+detail= 40;
 
 planetdia=(ringdia/2-tireprofile*2)*planetteeth/(sunteeth/2+planetteeth);
 sundia=(ringdia/2-tireprofile)*sunteeth/(sunteeth/2+planetteeth);
@@ -45,12 +45,14 @@ $fn=detail;
 //driverods();
 //elevator();
 //hotend);
-//carriage();
+carriage();
 //topdeck();
 //translate([0,0,-1012])floor();
-planetaries();
-//translate([0,140,0])planetholder();
-//translate([0,90,0])stepperholder();
+//planetaries();
+//planetholder();
+//translate([0,90,0])
+//stepperholder();
+//stepper();
 //screw(50,0.2);
 module screw(d,mar){
     cylinder(25,1.25+mar,1.25+mar,center=false,$fn=d);
@@ -73,31 +75,33 @@ module planetaries(){
 for(j=[-10:layer:9.75]){
 difference(){
     color("brown")translate([0,0,0.5*j])linear_extrude(layer)difference(){
-     rotate([0,0,360/(sunteeth*2)+2*abs(j)-8])gear(sundia,sunteeth); 
-        square([3,6],center=true);
+     rotate([0,0,360/(sunteeth*2)+2*abs(j)-8])gear(sundia-0.1,sunteeth); 
+        square([3,5],center=true);
     }
     translate([0,0,3])
     cylinder(2,6,7,center=false);
+    translate([0,0,1])
+    cylinder(2,3,3.5,center=false);
     }
     difference(){
     color("yellow")translate([0,0,0.5*j])linear_extrude(layer)for (i=[-180:60:120])
-    rotate([0,0,i-35])translate([planetdia/2+sundia/2+0.5,0,0])difference(){
-     rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia,planetteeth); 
-        circle(planetscrew/2);
+    rotate([0,0,i-34.9])translate([planetdia/2+sundia/2+0.39,0,0])difference(){
+     rotate([0,0,(180/planetteeth)*i-2*abs(j)])gear(planetdia-0.3,planetteeth); 
+        circle(2.6);
     }
-    for (n=[-180:60:120])rotate([0,0,n-35])translate([planetdia/2+sundia/2+0.5,0,3])
-    cylinder(2,3,4,center=false);
+    for (n=[-180:60:120])rotate([0,0,n-34.9])translate([planetdia/2+sundia/2+0.39,0,3])
+    cylinder(2,4,5,center=false);
     }
         color("cyan")translate([0,0,0.5*j])linear_extrude(layer)
         difference(){
         circle(ringdia/2-tireprofile+0.3);
-    rotate([0,0,360/(sunteeth*2)-0.55*abs(j)-0])gear(ringdia-tireprofile*2-toothpitch*1.5+margin*9,ringteeth);
+    rotate([0,0,360/(sunteeth*2)-0.55*abs(j)-0])gear(ringdia-tireprofile*2-toothpitch*1.5+margin*10,ringteeth);
     }
     
-    for(k=[0:1:360]){
+    for(k=[0:0.51:360]){
         
-   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile+layer,0])
-        linear_extrude(20*PI/360*3)
+   color("blue")rotate([0,90,k])translate([0,ringdia/2-tireprofile+layer,-0.5])
+        linear_extrude(2*PI/360*15)
         polygon([[1,tireprofile],[5,1+sin(7*k+30)],[5,-0.5],[-5,-0.5],[-5,1+sin(7*k-30)],[-1,tireprofile]]);
     }  
     }
@@ -215,10 +219,39 @@ module gear(dia,teeth){
          [dia/2-toothpitch/2*2,-dia*PI/(teeth*4)-toothslewrate/2-dia*PI/(teeth*3)]]);
      }    
     }
+    
+    module brakepipeadapter(){
+    
+    gjengeavstand=6/7;
+ytregjengedia=10;
+gjengelengde=10;
+gjengedybde=0.5;
+bowdendia=4.3;
+bowdentunnel=10;
+bowdenupper=5;
+bowdenlower=3;
+resolution=20;
+    
+    cylinder(gjengelengde,ytregjengedia/2-gjengedybde*2/3, ytregjengedia/2-gjengedybde*2/3,center=false);
+sphere(ytregjengedia/2-gjengedybde);
+
+for(i=[0:360/resolution:360*gjengelengde*7/6+resolution*4])
+    rotate([0,0,i])
+translate([-ytregjengedia/2,-PI*ytregjengedia/(resolution*2),i*gjengeavstand/360])
+rotate([0,91,90])
+linear_extrude(PI*ytregjengedia/resolution)
+polygon([[-gjengeavstand/2,-gjengedybde],[0,0],[gjengeavstand/2,-gjengedybde],]);
+    }
 
 module carriage(){
-    color("silver")difference(){
+
+    color("silver")
+    difference(){
+    union(){
         cylinder(10,50,50,center=true);
+         cylinder(20,20,3,center=false,$fn=3);
+        }
+        translate([0,0,5])rotate([0,180,0])brakepipeadapter();
     cylinder(80,2,2,center=true);
         for (k=[0:120:350]){
         rotate([0,0,k+15])translate([26,26,2])rotate([-30,30,-3])cylinder(40,5,14,center=true);
@@ -250,10 +283,10 @@ rotate([0,45,l])translate([25,30*m+2,15])cylinder(100,0.9,0.9,center=true);
         
    //rotate([0,0,j])translate([30,6,30])rotate([90,-90,0])stepper();
      
-   rotate([0,0,j])planetholder();     
+   //rotate([0,0,j])planetholder();     
     
     
-   rotate([0,0,j])stepperholder();    
+   //rotate([0,0,j])stepperholder();    
         //rotate([0,0,j])translate([30,0,30])rotate([90,0,0])
         //planetaries();
         //cylinder(10,29,29,center=true);//switch with planetary gear
@@ -275,7 +308,7 @@ module stepper(){translate([8,0,-4.5]){
     color("yellow")translate([-8,0,8])cube([5,2,9],center=true);
     for (i=[-1:2:1]){
         
-        translate([0,16*i,5])rotate([0,0,0])
+        translate([0,17*i,5])rotate([0,0,0])
         color("grey")difference(){
         cylinder(1,4,4,center=true);
             cylinder(10,2,2,center=true);
@@ -287,9 +320,9 @@ module stepper(){translate([8,0,-4.5]){
 
 module planetholder(){
 //planetdia/2+sundia/2+0.5
-    translate([30,-9,30])rotate([90,-90,0]){
+    {
 difference(){
-     translate([0,0,1])color("white")minkowski(){ 
+     translate([30,-9,30])rotate([90,-90,0])translate([0,0,1])color("white")minkowski(){ 
         difference(){
    cylinder(6,22,20,center=true,$fn=3);
             rotate([0,0,0])cylinder(7,9,11,center=true,$fn=6);
@@ -298,12 +331,15 @@ difference(){
         }
         cylinder(2,2,3,center=true);
 }
-for (l=[-120:120:120])
-    rotate([0,0,l])translate([planetdia/2+sundia/2+0.5,0,0])
+translate([30,-9,30])rotate([90,-90,0])
+for (l=[-120:120:120])//on planetgears: planetdia/2+sundia/2+0.39
+    rotate([0,0,l])translate([planetdia/2+sundia/2+0.39,0,-20])
      //rotate([0,0,(180/planetteeth)*l]) 
-        cylinder(200,planetscrew/2,planetscrew/2,center=true);
+        //cylinder(30,planetscrew/2,planetscrew/2,center=true);
+        color("red")screw(5,0);
 }
 difference(){
+translate([30,-9,30])rotate([90,-90,0])
 color("pink")rotate([0,0,0])translate([-25,0,+8])rotate([0,90,0])
 minkowski(){difference(){
     linear_extrude(9)polygon([[-4,17],[8,21],[8,-15],[-0,-12],[-1,2],[0,3]]);
@@ -321,13 +357,20 @@ translate([27+12,-4-7,-5])screw(screwdetail,threadmargin);
 }
 
 module stepperholder(){
-    translate([30,17,26])rotate([90,-90,0])
+//translate([30,6,30])rotate([90,-90,0])stepper();
+    
     difference(){
+    translate([30,17,26])rotate([90,-90,0])
 union(){
     color("green")minkowski(){
     difference(){
 linear_extrude(10)polygon([[-8,14],[15,22],[19,17],[18,-18],[15,-21],[10,-24],[-20,-10],[-20,8]]);
-      translate([12,0,0])cylinder(50,15,15,center=true,$fn=50);     
+      translate([12,0,0])cylinder(50,15,15,center=true,$fn=50);
+      
+  translate([30-30,6-17,30])rotate([-90,90,0])translate([8,17,-0])rotate([0,0,0])
+        color("grey")cylinder(2,5.5,5.5,center=true);
+        translate([30,6,30])rotate([90,-90,0])translate([8,-17,-0])rotate([0,0,0])
+        color("grey")cylinder(2,5.5,5.5,center=true);     
     }
  sphere(1,$fn=8);
 } 
@@ -341,16 +384,17 @@ minkowski(){
 translate([-20,-0,25]){
 translate(motormountscrew1)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
 translate(motormountscrew2)rotate([0,90,0])cylinder(40,planetscrew/2,planetscrew/2,center=true);
-
-    }
-    
+}
+translate([30-17,4,38])rotate([-90,0,0])color("red")screw(5,0);
+translate([30+17,4,38])rotate([-90,0,0])color("red")screw(5,0);    
+translate([30-17,6,38])rotate([-90,0,0])color("red")cylinder(1,4.5,4.5,center=false);
+translate([30+17,6,38])rotate([-90,0,0])color("red")cylinder(1,4.5,4.5,center=false);
+translate([30,6,38])color("red")cube([34,2,9],center=true);
 translate([21,14,-5])color("grey")screw(screwdetail,threadmargin);
 translate([41,14,-5])color("grey")screw(screwdetail,threadmargin); 
-    
-    //}
+
 }
-//translate([21,14,-8])color("grey")screw(screwdetail,threadmargin);
-//translate([41,14,-8])color("grey")screw(screwdetail,threadmargin); 
+//translate([30,6,38])color("red")cube([34,2,10],center=true);
 }
 module driverodholder(){translate([542+20,0,-12-12])rotate([0,0,180])difference(){
     color("cyan")minkowski(){
@@ -397,3 +441,4 @@ echo("and planet diameter is ");
 echo(planetdia);
 echo("and ring teeth is ");
 echo(ringteeth);
+
